@@ -1,0 +1,59 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Admin Model (For Authentication)
+model Admin {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String   // Will be hashed with bcrypt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 2. Enums (Strict lists of allowed values from the prompt)
+enum ApplicationStatus {
+  PENDING
+  SHORTLISTED
+  ACCEPTED
+  REJECTED
+}
+
+enum InternshipTrack {
+  FRONTEND
+  BACKEND
+  MOBILE
+  UI_UX
+  DATA_ANALYTICS
+}
+
+// 3. Applicant Model (The core of the API)
+model Applicant {
+  id        Int               @id @default(autoincrement())
+  name      String
+  email     String            @unique // Business rule: Emails must be unique
+  phone     String?           // Optional, but standard for applicants
+  track     InternshipTrack
+  status    ApplicationStatus @default(PENDING) // Business rule: Starts as pending
+
+  // Business rule: Notes max 1,000 chars (We will enforce this in the DTO)
+  notes     String?
+
+  // Business rule: Soft delete (We update this instead of deleting the row)
+  deletedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for performance (Required for search/filter/sort)
+  @@index([email])
+  @@index([status])
+  @@index([track])
+}
