@@ -1,19 +1,19 @@
-import { IsEmail, IsString, IsOptional, IsEnum, MaxLength } from 'class-validator';
+import { IsEmail, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
 import { InternshipTrack } from '@prisma/client';
 
 export class CreateApplicantDto {
   @IsString()
-  name: string;
+  name!: string;
 
   @IsEmail()
-  email: string;
+  email!: string;
 
   @IsString()
   @IsOptional()
   phone?: string;
 
   @IsEnum(InternshipTrack)
-  track: InternshipTrack;
+  track!: InternshipTrack;
 
   @IsString()
   @IsOptional()

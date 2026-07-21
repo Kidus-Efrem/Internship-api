@@ -1,6 +1,8 @@
+import { IsEmail, IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+
 import { PartialType } from '@nestjs/mapped-types';
 import { CreateApplicantDto } from './create-applicant.dto';
-import { IsEnum, IsOptional, IsString, MaxLength } from 'class-validator';
+
 import { ApplicationStatus, InternshipTrack } from '@prisma/client';
 
 export class UpdateApplicantDto extends PartialType(CreateApplicantDto) {

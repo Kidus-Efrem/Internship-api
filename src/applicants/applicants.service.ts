@@ -40,12 +40,11 @@ export class ApplicantsService {
     return applicant;
   }
 
-  async update(id: number, dto: UpdateApplicantDto) {
-    await this.findOne(id);
+    async update(id: number, dto: UpdateApplicantDto) {
+    // findOne already throws a 404 if it doesn't exist, and returns the applicant
+    const currentApplicant = await this.findOne(id);
 
     if (dto.status) {
-      const currentApplicant = await this.prisma.applicant.findUnique({ where: { id } });
-
       if (currentApplicant.status === 'REJECTED' && dto.status === 'ACCEPTED') {
         throw new BadRequestException('Cannot move an applicant directly from Rejected to Accepted');
       }
