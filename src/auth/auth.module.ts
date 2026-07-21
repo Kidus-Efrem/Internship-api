@@ -12,10 +12,15 @@ import { AuthController } from './auth.controller';
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET'),
-        signOptions: { expiresIn: configService.get<string>('JWT_EXPIRES_IN') },
-      }),
+            useFactory: async (configService: ConfigService) => {
+        const secret = configService.get<string>('JWT_SECRET') || 'fallback-secret-key';
+        const expiresIn = configService.get<string>('JWT_EXPIRES_IN') || '7d';
+
+        return {
+          secret,
+          signOptions: { expiresIn: expiresIn as any },
+        };
+      },
     }),
   ],
   providers: [AuthService],
