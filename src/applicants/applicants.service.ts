@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateApplicantDto } from './dto/create-applicant.dto';
 import { UpdateApplicantDto } from './dto/update-applicant.dto';
 import { Prisma } from '@prisma/client';
+import { GetApplicantsQueryDto } from './dto/get-applicants-query.dto';
 
 @Injectable()
 export class ApplicantsService {
@@ -21,11 +22,59 @@ export class ApplicantsService {
     }
   }
 
-  async findAll() {
-    return this.prisma.applicant.findMany({
-      where: { deletedAt: null },
-      orderBy: { createdAt: 'desc' },
-    });
+    async findAll(query: GetApplicantsQueryDto) {
+    const {
+      page = 1,
+      limit = 10,
+      search,
+      status,
+      track,
+      sortBy = 'createdAt',
+      sortOrder = 'desc'
+    } = query;
+
+    const skip = (page - 1) * limit;
+
+    const where: any = {
+      deletedAt: null,
+    };
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (track) {
+      where.track = track;
+    }
+
+    if (search) {
+      where.OR = [
+        { name: { contains: search } },
+        { email: { contains: search } },
+      ];
+    }
+
+    const [data, total] = await Promise.all([
+      this.prisma.applicant.findMany({
+        where,
+        skip,
+        take: limit,
+        orderBy: {
+          [sortBy]: sortOrder,
+        },
+      }),
+      this.prisma.applicant.count({ where }),
+    ]);
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   async findOne(id: number) {
