@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:./prisma/dev.db
+      - PORT=3000
+      - JWT_SECRET=super-secret-docker-key
+      - JWT_EXPIRES_IN=7d
+    volumes:
+      # This ensures the SQLite database file is saved and persists across restarts
+      - prisma-data:/app/prisma
+
+volumes:
+  prisma-data:
