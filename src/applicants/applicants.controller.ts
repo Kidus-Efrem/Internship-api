@@ -1,9 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, ParseIntPipe, Query } from '@nestjs/common';
+import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { ApplicantsService } from './applicants.service';
 import { CreateApplicantDto } from './dto/create-applicant.dto';
 import { UpdateApplicantDto } from './dto/update-applicant.dto';
+import { GetApplicantsQueryDto } from './dto/get-applicants-query.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import {GetApplicantsQueryDto} from './dto/get-applicants-query.dto'
+
+@ApiTags('Applicants')
+@ApiBearerAuth()
 @Controller('api/applicants')
 @UseGuards(JwtAuthGuard)
 export class ApplicantsController {
@@ -15,7 +19,7 @@ export class ApplicantsController {
   }
 
   @Get()
-  findAll(@Query() query:GetApplicantsQueryDto) {
+  findAll(@Query() query: GetApplicantsQueryDto) {
     return this.applicantsService.findAll(query);
   }
 
