@@ -1,24 +1,23 @@
-# Use official Node.js 18 Alpine image (lightweight)
-FROM node:18-alpine
+FROM node:20-alpine
 
-# Set working directory inside the container
 WORKDIR /app
 
-# Copy package files and install dependencies
+# 1. Install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy the rest of the application code
-COPY . .
-
-# Generate Prisma Client (required before building)
+# 2. Copy Prisma schema and generate client
+COPY prisma ./prisma/
 RUN npx prisma generate
 
-# Build the TypeScript code into JavaScript
+# 3. Copy the rest of your source code
+COPY . .
+
+# 4. Build the TypeScript code
 RUN npm run build
 
-# Expose the port the app runs on
+# 5. Expose your port
 EXPOSE 3000
 
-# On startup: push DB schema, seed the admin user, then start the production server
-CMD ["sh", "-c", "npx prisma db push && npx prisma db seed && npm run start:prod"]
+# 6. Run the app (push DB schema, then start)
+CMD ["sh", "-c", "npx prisma db push && npm run start:prod"]
