@@ -1,5 +1,3 @@
-
-```markdown
 # INFNOVA Internship API
 
 A robust, production-ready REST API for managing internship applicants, built with NestJS, Prisma, and SQLite.
@@ -28,24 +26,24 @@ A robust, production-ready REST API for managing internship applicants, built wi
 
 - Node.js (v18 or higher)
 - npm
+- Docker & Docker Compose (Recommended for easiest setup)
 
+---
 
-```markdown
 ## 🐳 Running with Docker (Recommended)
 
 If you have Docker and Docker Compose installed, you can run the entire application with a single command. This handles dependency installation, database setup, and seeding automatically.
 
 1. **Build and start the container:**
    ```bash
-   docker-compose up --build
+   docker compose up --build
    ```
 2. The API will be running at `http://localhost:3000`.
 3. To stop the container, press `Ctrl + C` in the terminal, then run:
    ```bash
-   docker-compose down
+   docker compose down
    ```
-```
-
+   *(Note: Use `docker compose down -v` if you want to completely wipe the local SQLite database and start fresh).*
 
 ---
 
@@ -69,12 +67,20 @@ If you have Docker and Docker Compose installed, you can run the entire applicat
    ```
    *(You can update the `JWT_SECRET` in the `.env` file to a secure random string if desired).*
 
-4. **Initialize the Database & Seed Data:**
-   This will create the SQLite database, run migrations, and create a default Admin user.
+4. **Initialize the Database:**
+   This will create the SQLite database and sync the schema.
    ```bash
-   npx prisma migrate dev --name init
+   npx prisma db push
+   ```
+   *(Note: If you are using Prisma Migrate instead, use `npx prisma migrate dev --name init`)*
+
+5. **Seed the Database:**
+   Populate the database with a default Admin user.
+   ```bash
    npx prisma db seed
    ```
+   *(Note: Because your `package.json` seed script points to `dist/prisma/seed.js`, you may need to run `npm run build` before this step).*
+
    **Default Admin Credentials:**
    - Email: `admin@infnova.com`
    - Password: `password123`
@@ -110,5 +116,4 @@ src/
 ├── dashboard/      # Analytics and summary statistics
 ├── prisma/         # Database connection, schema, and seed script
 └── main.ts         # Application entry point, global pipes, and Swagger setup
-```
 ```
